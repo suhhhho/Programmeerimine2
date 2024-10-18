@@ -1,0 +1,54 @@
+﻿@model KooliProjekt.Data.Rent
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Rent</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.śtart_time)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.śtart_time)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.end_time)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.end_time)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.kilometrs_driven)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.kilometrs_driven)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.is_cancelled)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.is_cancelled)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.carId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.carId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.User)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.User.Id)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
