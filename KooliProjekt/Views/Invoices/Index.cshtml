@@ -1,4 +1,4 @@
-﻿@model IEnumerable<KooliProjekt.Data.Invoice>
+﻿@model PagedResult<KooliProjekt.Data.Invoice>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,19 +13,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.InvoiceNo)
+                InvoiceNo
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InvoiceDate)
+                InvoiceDate
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DueDate)
+                DueDate
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Results) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.InvoiceNo)
@@ -45,3 +45,4 @@
 }
     </tbody>
 </table>
+@(await Component.InvokeAsync<PagerViewComponent>(Model))

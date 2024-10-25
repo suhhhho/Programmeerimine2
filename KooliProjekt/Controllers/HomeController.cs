@@ -13,7 +13,7 @@ namespace KooliProjekt.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
             return View();
         }

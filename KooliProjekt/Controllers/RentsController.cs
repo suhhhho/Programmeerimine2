@@ -19,10 +19,10 @@ namespace KooliProjekt.Controllers
         }
 
         // GET: Rents
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
             var applicationDbContext = _context.Rent.Include(r => r.User);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await applicationDbContext.GetPagedAsync(page, 2));
         }
 
         // GET: Rents/Details/5
