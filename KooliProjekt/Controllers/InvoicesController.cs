@@ -1,30 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using KooliProjekt.Data;
+using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using KooliProjekt.Data;
 
 namespace KooliProjekt.Controllers
 {
     public class InvoicesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IInvoiceService _invoiceService;
 
-        public InvoicesController(ApplicationDbContext context)
+        public InvoicesController(IInvoiceService invoiceService)
         {
-            _context = context;
+            _invoiceService = invoiceService;
         }
 
-        // GET: Invoices
+        // GET: TodoLists
         public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Invoices.GetPagedAsync(page, 2));
+            var data = await _invoiceService.List(page, 5);
+
+            return View(data);
         }
 
-        // GET: Invoices/Details/5
+        // GET: TodoLists/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,8 +29,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var invoice = await _context.Invoices
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var invoice = await _invoiceService.Get(id.Value);
             if (invoice == null)
             {
                 return NotFound();
@@ -42,29 +38,28 @@ namespace KooliProjekt.Controllers
             return View(invoice);
         }
 
-        // GET: Invoices/Create
+        // GET: TodoLists/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Invoices/Create
+        // POST: TodoLists/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,InvoiceNo,InvoiceDate,DueDate")] Invoice invoice)
+        public async Task<IActionResult> Create([Bind("Id,Title")] Invoice invoice)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(invoice);
-                await _context.SaveChangesAsync();
+                await _invoiceService.Save(invoice);
                 return RedirectToAction(nameof(Index));
             }
             return View(invoice);
         }
 
-        // GET: Invoices/Edit/5
+        // GET: TodoLists/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -72,20 +67,20 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var invoice = await _context.Invoices.FindAsync(id);
-            if (invoice == null)
+            var todoList = await _invoiceService.Get(id.Value);
+            if (todoList == null)
             {
                 return NotFound();
             }
-            return View(invoice);
+            return View(todoList);
         }
 
-        // POST: Invoices/Edit/5
+        // POST: TodoLists/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,InvoiceNo,InvoiceDate,DueDate")] Invoice invoice)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title")] Invoice invoice)
         {
             if (id != invoice.Id)
             {
@@ -94,28 +89,13 @@ namespace KooliProjekt.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(invoice);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!InvoiceExists(invoice.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _invoiceService.Save(invoice);
                 return RedirectToAction(nameof(Index));
             }
             return View(invoice);
         }
 
-        // GET: Invoices/Delete/5
+        // GET: TodoLists/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -123,8 +103,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var invoice = await _context.Invoices
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var invoice = await _invoiceService.Get(id.Value);
             if (invoice == null)
             {
                 return NotFound();
@@ -133,24 +112,14 @@ namespace KooliProjekt.Controllers
             return View(invoice);
         }
 
-        // POST: Invoices/Delete/5
+        // POST: TodoLists/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
-            if (invoice != null)
-            {
-                _context.Invoices.Remove(invoice);
-            }
+            await _invoiceService.Delete(id);
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool InvoiceExists(int id)
-        {
-            return _context.Invoices.Any(e => e.Id == id);
         }
     }
 }

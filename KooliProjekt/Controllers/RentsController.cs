@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using KooliProjekt.Data;
+using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using KooliProjekt.Data;
 
 namespace KooliProjekt.Controllers
 {
-    public class RentsController : Controller
+    public class RentController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRentsService _rentService;
 
-        public RentsController(ApplicationDbContext context)
+        public RentController(IRentsService RentService)
         {
-            _context = context;
+            _rentService = RentService;
         }
 
-        // GET: Rents
+        // GET: TodoLists
         public async Task<IActionResult> Index(int page = 1)
         {
-            var applicationDbContext = _context.Rent.Include(r => r.User);
-            return View(await applicationDbContext.GetPagedAsync(page, 2));
+            var data = await _rentService.List(page, 5);
+
+            return View(data);
         }
 
-        // GET: Rents/Details/5
+        // GET: TodoLists/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,42 +29,37 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var rent = await _context.Rent
-                .Include(r => r.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (rent == null)
+            var Rent = await _rentService.Get(id.Value);
+            if (Rent == null)
             {
                 return NotFound();
             }
 
-            return View(rent);
+            return View(Rent);
         }
 
-        // GET: Rents/Create
+        // GET: TodoLists/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
-        // POST: Rents/Create
+        // POST: TodoLists/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,śtart_time,end_time,kilometrs_driven,is_cancelled,carId,UserId")] Rent rent)
+        public async Task<IActionResult> Create([Bind("Id,Title")] Rent rent)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(rent);
-                await _context.SaveChangesAsync();
+                await _rentService.Save(rent);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", rent.UserId);
             return View(rent);
         }
 
-        // GET: Rents/Edit/5
+        // GET: TodoLists/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -76,21 +67,20 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var rent = await _context.Rent.FindAsync(id);
+            var rent = await _rentService.Get(id.Value);
             if (rent == null)
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", rent.UserId);
             return View(rent);
         }
 
-        // POST: Rents/Edit/5
+        // POST: TodoLists/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,śtart_time,end_time,kilometrs_driven,is_cancelled,carId,UserId")] Rent rent)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title")] Rent rent)
         {
             if (id != rent.Id)
             {
@@ -99,29 +89,13 @@ namespace KooliProjekt.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(rent);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RentExists(rent.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _rentService.Save(rent);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", rent.UserId);
             return View(rent);
         }
 
-        // GET: Rents/Delete/5
+        // GET: TodoLists/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -129,9 +103,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var rent = await _context.Rent
-                .Include(r => r.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var rent = await _rentService.Get(id.Value);
             if (rent == null)
             {
                 return NotFound();
@@ -140,24 +112,14 @@ namespace KooliProjekt.Controllers
             return View(rent);
         }
 
-        // POST: Rents/Delete/5
+        // POST: TodoLists/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var rent = await _context.Rent.FindAsync(id);
-            if (rent != null)
-            {
-                _context.Rent.Remove(rent);
-            }
+            await _rentService.Delete(id);
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool RentExists(int id)
-        {
-            return _context.Rent.Any(e => e.Id == id);
         }
     }
 }

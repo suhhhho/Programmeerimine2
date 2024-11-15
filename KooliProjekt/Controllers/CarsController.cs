@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using KooliProjekt.Data;
+using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using KooliProjekt.Data;
 
 namespace KooliProjekt.Controllers
 {
     public class CarsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICarsService _carsService;
 
-        public CarsController(ApplicationDbContext context)
+        public CarsController(ICarsService CarsService)
         {
-            _context = context;
+            _carsService = CarsService;
         }
 
-        // GET: Cars
+        // GET: TodoLists
         public async Task<IActionResult> Index(int page = 1)
-            
         {
-            return View(await _context.Cars.GetPagedAsync(page, 2));
+            var data = await _carsService.List(page, 5);
+
+            return View(data);
         }
 
-        // GET: Cars/Details/5
+        // GET: TodoLists/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,8 +29,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var cars = await _context.Cars
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var cars = await _carsService.Get(id.Value);
             if (cars == null)
             {
                 return NotFound();
@@ -43,29 +38,28 @@ namespace KooliProjekt.Controllers
             return View(cars);
         }
 
-        // GET: Cars/Create
+        // GET: TodoLists/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Cars/Create
+        // POST: TodoLists/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,rental_rate_per_minute,rental_rate_per_km,is_available")] Cars cars)
+        public async Task<IActionResult> Create([Bind("Id,Title")] Cars cars)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(cars);
-                await _context.SaveChangesAsync();
+                await _carsService.Save(cars);
                 return RedirectToAction(nameof(Index));
             }
             return View(cars);
         }
 
-        // GET: Cars/Edit/5
+        // GET: TodoLists/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,7 +67,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var cars = await _context.Cars.FindAsync(id);
+            var cars = await _carsService.Get(id.Value);
             if (cars == null)
             {
                 return NotFound();
@@ -81,12 +75,12 @@ namespace KooliProjekt.Controllers
             return View(cars);
         }
 
-        // POST: Cars/Edit/5
+        // POST: TodoLists/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,rental_rate_per_minute,rental_rate_per_km,is_available")] Cars cars)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title")] Cars cars)
         {
             if (id != cars.Id)
             {
@@ -95,28 +89,13 @@ namespace KooliProjekt.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(cars);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CarsExists(cars.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _carsService.Save(cars);
                 return RedirectToAction(nameof(Index));
             }
             return View(cars);
         }
 
-        // GET: Cars/Delete/5
+        // GET: TodoLists/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,8 +103,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var cars = await _context.Cars
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var cars = await _carsService.Get(id.Value);
             if (cars == null)
             {
                 return NotFound();
@@ -134,24 +112,14 @@ namespace KooliProjekt.Controllers
             return View(cars);
         }
 
-        // POST: Cars/Delete/5
+        // POST: TodoLists/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var cars = await _context.Cars.FindAsync(id);
-            if (cars != null)
-            {
-                _context.Cars.Remove(cars);
-            }
+            await _carsService.Delete(id);
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool CarsExists(int id)
-        {
-            return _context.Cars.Any(e => e.Id == id);
         }
     }
 }
