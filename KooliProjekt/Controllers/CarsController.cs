@@ -6,9 +6,9 @@ namespace KooliProjekt.Controllers
 {
     public class CarsController : Controller
     {
-        private readonly ICarsService _carsService;
+        private readonly ICarService _carsService;
 
-        public CarsController(ICarsService CarsService)
+        public CarsController(ICarService CarsService)
         {
             _carsService = CarsService;
         }
@@ -21,8 +21,13 @@ namespace KooliProjekt.Controllers
             return View(data);
         }
 
+        public ICarService Get_carsService()
+        {
+            return _carsService;
+        }
+
         // GET: TodoLists/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, ICarService _carsService)
         {
             if (id == null)
             {

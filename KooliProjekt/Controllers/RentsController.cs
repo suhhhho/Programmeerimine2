@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KooliProjekt.Controllers
 {
-    public class RentController : Controller
+    public class RentsController : Controller
     {
-        private readonly IRentsService _rentService;
+        private readonly IRentService _rentService;
 
-        public RentController(IRentsService RentService)
+        public RentsController(IRentService rentService)
         {
-            _rentService = RentService;
+            _rentService = rentService;
         }
 
         // GET: TodoLists

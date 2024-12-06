@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.Services
 {
-    public class RentsService : IRentService
+    public class RentService : IRentService
     {
         private readonly ApplicationDbContext _context;
 
-        public RentsService(ApplicationDbContext context)
+        public RentService(ApplicationDbContext context)
         {
             _context = context;
         }

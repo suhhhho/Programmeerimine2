@@ -2,7 +2,7 @@
 
 namespace KooliProjekt.Services
 {
-    public interface IRentsService
+    public interface ICarsService
     {
         Task<PagedResult<Cars>> List(int page, int pageSize);
         Task<Cars> Get(int id);

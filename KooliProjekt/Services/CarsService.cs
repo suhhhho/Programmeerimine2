@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.Services
 {
-    public class RentService : ICarsService
+    public class CarsService : ICarsService
     {
         private readonly ApplicationDbContext _context;
 
-        public RentService(ApplicationDbContext context)
+        public CarsService(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -45,5 +45,13 @@ namespace KooliProjekt.Services
                 await _context.SaveChangesAsync();
             }
         }
+    }
+
+    public interface ICarService
+    {
+        Task Delete(int id);
+        Task<string?> List(int page, int v);
+        Task Save(Cars cars);
+        Task<Cars> Get(int id);
     }
 }
