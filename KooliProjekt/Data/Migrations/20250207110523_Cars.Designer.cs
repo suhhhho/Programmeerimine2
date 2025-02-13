@@ -11,9 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KooliProjekt.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241108132106_[Invoice]")]
-    partial class Invoice
+    partial class Car
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +30,10 @@ namespace KooliProjekt.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("is_available")
                         .HasColumnType("bit");
@@ -64,6 +66,10 @@ namespace KooliProjekt.Data.Migrations
                     b.Property<int>("InvoiceNo")
                         .HasColumnType("int");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Invoices");
@@ -76,6 +82,10 @@ namespace KooliProjekt.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()

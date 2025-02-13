@@ -46,12 +46,4 @@ namespace KooliProjekt.Services
             }
         }
     }
-
-    public interface ICarService
-    {
-        Task Delete(int id);
-        Task<string?> List(int page, int v);
-        Task Save(Cars cars);
-        Task<Cars> Get(int id);
-    }
 }
