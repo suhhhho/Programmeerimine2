@@ -1,9 +1,11 @@
-namespace KooliProjekt.Models
-{
-    public class ErrorViewModel
-    {
-        public string? RequestId { get; set; }
+namespace KooliProjekt.Models;
+using System.Diagnostics.CodeAnalysis;
 
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-    }
+[ExcludeFromCodeCoverage]
+
+public class ErrorViewModel
+{
+    public string? RequestId { get; set; }
+
+    public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 }

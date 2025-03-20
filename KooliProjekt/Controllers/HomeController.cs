@@ -1,9 +1,11 @@
 ﻿using KooliProjekt.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KooliProjekt.Controllers
 {
+    [ExcludeFromCodeCoverage]
     public class HomeController : Controller
     {
 

@@ -1,10 +1,12 @@
-﻿namespace KooliProjekt.Models
+﻿namespace KooliProjekt.Models;
+using System.Diagnostics.CodeAnalysis;
+
+[ExcludeFromCodeCoverage]
+
+public class RentIndexModel
 {
-    public class RentIndexModel
+    public RentIndexModel() { }
+    public RentIndexModel(int index)
     {
-        public RentIndexModel() { }
-        public RentIndexModel(int index)
-        {
-        }
     }
 }

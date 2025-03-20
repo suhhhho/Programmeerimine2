@@ -26,6 +26,7 @@ namespace KooliProjekt.UnitTests.ServiceTests
             DbContext.Rent.Add(list);
             DbContext.SaveChanges();
 
+
             // Act
             await _service.Delete(list.Id);
 

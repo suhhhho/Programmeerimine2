@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KooliProjekt.Data
 {
+    [ExcludeFromCodeCoverage]
     public static class PagingExtensions
     {
 

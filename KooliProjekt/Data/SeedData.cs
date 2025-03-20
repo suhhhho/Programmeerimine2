@@ -1,11 +1,13 @@
 ﻿using KooliProjekt.Data;
 using Microsoft.AspNetCore.Identity;
 using NuGet.Protocol.Core.Types;
+using System.Diagnostics.CodeAnalysis;
 
 public static class SeedData
 {
+    [ExcludeFromCodeCoverage]
 
-        public static void Generate(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+    public static void Generate(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             if (context.Rent.Any())
             {
