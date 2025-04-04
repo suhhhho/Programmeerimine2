@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using KooliProjekt.Controllers;
 using KooliProjekt.Data;
+using KooliProjekt.Models;
 using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -34,14 +35,15 @@ namespace KooliProjekt.UnitTests.ControllerTests
                 new Cars { Id = 2, Title = "Test 2" }
             };
             var pagedResult = new PagedResult<Cars> { Results = data };
-            _carsServiceMock.Setup(x => x.List(page, It.IsAny<int>())).ReturnsAsync(pagedResult);
+            _carsServiceMock.Setup(x => x.List(page, It.IsAny<int>(), null)).ReturnsAsync(pagedResult);
 
             // Act
-            var result = await _controller.Index(page) as ViewResult;
+            var result = await _controller.Index(page, null) as ViewResult;
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(pagedResult, result.Model);
+            var model = (CarsIndexModel)result.Model;
+            Assert.Equal(pagedResult, model.Data);
         }
         [Fact]
         public async Task DeleteConfirmed_should_delete_list()

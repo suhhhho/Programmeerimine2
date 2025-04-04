@@ -16,7 +16,7 @@ namespace KooliProjekt.Controllers
         // GET: TodoLists
         public async Task<IActionResult> Index(int page = 1)
         {
-            var data = await _rentService.List(page, 5);
+            var data = await _rentService.List(page, 5, null);
 
             return View(data);
         }

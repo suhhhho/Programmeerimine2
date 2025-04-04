@@ -1,4 +1,6 @@
 ﻿using KooliProjekt.Data;
+using KooliProjekt.Search;
+using KooliProjekt.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.Services
@@ -12,8 +14,8 @@ namespace KooliProjekt.Services
             _context = context;
         }
 
-        public async Task<PagedResult<Rent>> List(int page, int pageSize)
-        {
+        public async Task<PagedResult<Rent>> List(int page, int pageSize, RentSearch search)
+        {       
             return await _context.Rent.GetPagedAsync(page, 5);
         }
 

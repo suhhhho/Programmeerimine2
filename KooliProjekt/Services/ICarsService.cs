@@ -1,12 +1,12 @@
 ﻿using KooliProjekt.Data;
+using KooliProjekt.Search;
+using System.Threading.Tasks;
 
-namespace KooliProjekt.Services
+public interface ICarsService
 {
-    public interface ICarsService
-    {
-        Task<PagedResult<Cars>> List(int page, int pageSize);
-        Task<Cars> Get(int id);
-        Task Save(Cars list);
-        Task Delete(int id);
-    }
+    Task<PagedResult<Cars>> List(int page, int pageSize, CarsSearch search);
+    Task<Cars> Get(int id);
+    Task Save(Cars cars);
+    Task Delete(int id);
 }
+

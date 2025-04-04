@@ -1,7 +1,7 @@
 ﻿namespace KooliProjekt.Data;
 using System.Diagnostics.CodeAnalysis;
 
-    public class Cars
+  public class Cars
     {
     [ExcludeFromCodeCoverage]
     public int Id { get; set; }
@@ -10,5 +10,4 @@ using System.Diagnostics.CodeAnalysis;
      public Boolean is_available { get; set; }
         public string Title { get; set; }
     }
-}
 

@@ -1,5 +1,6 @@
 ﻿using KooliProjekt.Controllers;
 using KooliProjekt.Data;
+using KooliProjekt.Models;
 using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -37,11 +38,11 @@ namespace KooliProjekt.UnitTests.ControllerTests
                 RowCount = 2
             };
             _carserviceMock
-                .Setup(x => x.List(page, It.IsAny<int>()))
+                .Setup(x => x.List(page, It.IsAny<int>(), null))
                 .ReturnsAsync(pagedResult);
 
             // Act
-            var result = await _controller.Index(page) as ViewResult;
+            var result = await _controller.Index(page, null) as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -49,7 +50,8 @@ namespace KooliProjekt.UnitTests.ControllerTests
                 string.IsNullOrEmpty(result.ViewName) ||
                 result.ViewName == "Index"
             );
-            Assert.Equal(pagedResult, result.Model);
+            var model = (CarsIndexModel)result.Model;
+            Assert.Equal(pagedResult, model.Data);
         }
 
         [Fact]

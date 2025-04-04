@@ -1,4 +1,4 @@
-﻿@model PagedResult<KooliProjekt.Data.Cars>
+﻿@model KooliProjekt.Models.CarsIndexModel
 
 @{
     ViewData["Title"] = "Index";
@@ -25,7 +25,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Results) {
+@foreach (var item in Model.Data.Results) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.rental_rate_per_minute)
@@ -45,4 +45,4 @@
 }
     </tbody>
 </table>
-@(await Component.InvokeAsync<PagerViewComponent>(Model))
+@(await Component.InvokeAsync<PagerViewComponent>(Model.Data))

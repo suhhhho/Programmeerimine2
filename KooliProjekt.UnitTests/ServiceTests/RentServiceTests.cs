@@ -1,5 +1,6 @@
 ﻿using KooliProjekt.Data;
 using KooliProjekt.Services;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,8 @@ namespace KooliProjekt.UnitTests.ServiceTests
         public async Task Delete_should_remove_existing_list()
         {
             // Arrange
-            var list = new Rent { Title = "Test" };
+            // Add user to database and assign it to list.User property
+            var list = new Rent { Title = "Test", UserId ="UserId"  };
             DbContext.Rent.Add(list);
             DbContext.SaveChanges();
 

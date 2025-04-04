@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace KooliProjekt.Controllers
 {
     [ExcludeFromCodeCoverage]
-    [Route("api/TodoLists")]
+    [Route("api/Cars")]
     [ApiController]
     public class CarsApiController : ControllerBase
     {
@@ -23,7 +23,8 @@ namespace KooliProjekt.Controllers
         [HttpGet]
         public async Task<IEnumerable<Cars>> Get()
         {
-            var result = await _service.List(1, 10000);
+            PagedResult<Cars> result = await _service.List(1, 10000, null);
+
             return result.Results;
         }
 

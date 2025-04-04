@@ -1,4 +1,5 @@
 ﻿using KooliProjekt.Data;
+using KooliProjekt.Search;
 using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.Services
@@ -12,9 +13,9 @@ namespace KooliProjekt.Services
             _context = context;
         }
 
-        public async Task<PagedResult<Cars>> List(int page, int pageSize)
+        public async Task<PagedResult<Cars>> List(int page, int pageSize, CarsSearch search)
         {
-            return await _context.Cars.GetPagedAsync(page, 5);
+            return await _context.Cars.GetPagedAsync(page, pageSize);
         }
 
         public async Task<Cars> Get(int id)
@@ -44,6 +45,27 @@ namespace KooliProjekt.Services
                 _context.Cars.Remove(todoList);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public Task<PagedResult<Cars>> List(CarsSearch search)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        Task<Cars> ICarsService.Get(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task ICarsService.Save(Cars cars)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task ICarsService.Delete(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,11 +1,12 @@
-﻿namespace KooliProjekt.Models;
-using System.Diagnostics.CodeAnalysis;
+﻿using KooliProjekt.Data;
+using KooliProjekt.Search;
 
-[ExcludeFromCodeCoverage]
-public class CarsIndexModel
+namespace KooliProjekt.Models
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public string Cars { get; set; }
-    public CarsIndexModel() { }
+    public class CarsIndexModel
+    {
+        public CarsSearch Search { get; set; } = new CarsSearch();
+        public PagedResult<Cars> Data { get; set; } = new PagedResult<Cars>();
+    }
 }
+
