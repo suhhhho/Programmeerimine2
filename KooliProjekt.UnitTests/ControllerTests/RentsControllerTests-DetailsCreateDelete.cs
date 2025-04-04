@@ -37,7 +37,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
                 RowCount = 2
             };
             _rentServiceMock
-                .Setup(x => x.List(page, It.IsAny<int>()))
+                .Setup(x => x.List(page, It.IsAny<int>(), null))
                 .ReturnsAsync(pagedResult);
 
             // Act

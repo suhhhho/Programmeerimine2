@@ -34,7 +34,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
                 new Rent { Id = 2, Title = "Test 2" }
             };
             var pagedResult = new PagedResult<Rent> { Results = data };
-            _rentServiceMock.Setup(x => x.List(page, It.IsAny<int>())).ReturnsAsync(pagedResult);
+            _rentServiceMock.Setup(x => x.List(page, It.IsAny<int>(), null)).ReturnsAsync(pagedResult);
 
             // Act
             var result = await _controller.Index(page) as ViewResult;
