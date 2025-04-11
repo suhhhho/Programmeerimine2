@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using KooliProjekt.Data;
-using KooliProjekt.Data.Migrations;
 using KooliProjekt.IntegrationTests.Helpers;
 using Xunit;
 
@@ -60,7 +59,7 @@ namespace KooliProjekt.IntegrationTests
         public async Task Details_should_return_ok_when_list_was_found()
         {
             // Arrange
-            var list = new Car{ Title = "List 1" };
+            var list = new Cars { Title = "List 1" };
             _context.Cars.Add(list);
             _context.SaveChanges();
 

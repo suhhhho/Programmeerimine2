@@ -13,7 +13,7 @@ namespace KooliProjekt.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20241108131935_[Cars]")]
-    partial class Cars
+    partial class Cars1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

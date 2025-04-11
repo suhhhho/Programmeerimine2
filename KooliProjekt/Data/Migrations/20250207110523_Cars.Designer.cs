@@ -11,7 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KooliProjekt.Data.Migrations
 {
-    partial class Cars
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20250207110523_[Cars]")]
+    partial class Cars2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -7,7 +7,7 @@ namespace KooliProjekt.Data.Migrations
 {
     [ExcludeFromCodeCoverage]
     /// <inheritdoc />
-    public partial class Cars : Migration
+    public partial class Cars1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
