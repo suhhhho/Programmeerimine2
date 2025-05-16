@@ -40,10 +40,10 @@ namespace KooliProjekt.Services
 
         public async Task Delete(int id)
         {
-            var todoList = await _context.Rent.FindAsync(id);
-            if (todoList != null)
+            var Rent = await _context.Rent.FindAsync(id);
+            if (Rent != null)
             {
-                _context.Rent.Remove(todoList);
+                _context.Rent.Remove(Rent);
                 await _context.SaveChangesAsync();
             }
         }
