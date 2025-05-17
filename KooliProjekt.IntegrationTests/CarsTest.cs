@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using KooliProjekt.Data;
 using KooliProjekt.IntegrationTests.Helpers;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace KooliProjekt.IntegrationTests
 {
@@ -16,7 +17,7 @@ namespace KooliProjekt.IntegrationTests
         public CarsTests()
         {
             _client = Factory.CreateClient();
-            _context = (ApplicationDbContext)Factory.Services.GetService(typeof(ApplicationDbContext));
+            _context = Factory.Services.GetRequiredService<ApplicationDbContext>();
         }
 
         [Fact]

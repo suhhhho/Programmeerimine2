@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-
 namespace KooliProjekt.IntegrationTests.Helpers
 {
     public class FakeStartup
@@ -23,10 +22,19 @@ namespace KooliProjekt.IntegrationTests.Helpers
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            var dbGuid = Guid.NewGuid().ToString();
+            // Генерируем уникальный идентификатор для каждой базы данных теста
+            var dbGuid = Guid.NewGuid().ToString("N");
+            var baseConnectionString = Configuration.GetConnectionString("TestConnection");
+
+            // Заменяем имя базы данных на уникальное для каждого теста
+            var uniqueConnectionString = baseConnectionString.Replace("Database=TestDb", $"Database=TestDb_{dbGuid}");
+
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("TestConnection"));
+                options.UseSqlServer(uniqueConnectionString);
+                // Добавляем настройки для лучшей работы с соединениями
+                options.EnableDetailedErrors();
+                options.EnableSensitiveDataLogging();
             });
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -56,8 +64,8 @@ namespace KooliProjekt.IntegrationTests.Helpers
                     pattern: "{controller=Home}/{action=Index}/{id?}/{pathStr?}");
             });
 
-            var serviceScopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
-            using (var serviceScope = serviceScopeFactory.CreateScope())
+            // Упрощаем логику инициализации базы
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
                 if (dbContext == null)
@@ -70,20 +78,10 @@ namespace KooliProjekt.IntegrationTests.Helpers
                     throw new Exception("LIVE SETTINGS IN TESTS!");
                 }
 
+                // Удалим и создадим базу с нуля
                 dbContext.Database.EnsureDeleted();
                 dbContext.Database.EnsureCreated();
             }
         }
-
-        //private void EnsureDatabase(ApplicationDbContext dbContext)
-        //{
-        //    dbContext.Database.EnsureDeleted();
-        //    dbContext.Database.EnsureCreated();
-
-        //    if (!dbContext.Degustation.Any() || !dbContext.Batch.Any() || !dbContext.BatchIngredient.Any() || !dbContext.Batchlog.Any() || !dbContext.Batch.Any() || !dbContext.User.Any())
-        //    {
-        //        SeedData.Initialize(dbContext);
-        //    }
-        //}
     }
 }

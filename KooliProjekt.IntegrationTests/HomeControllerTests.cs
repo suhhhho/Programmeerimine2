@@ -4,6 +4,7 @@ using Xunit;
 
 namespace KooliProjekt.IntegrationTests
 {
+    [Collection("Sequential")]
     public class HomeControllerTests : TestBase
     {
         [Theory]
@@ -24,7 +25,6 @@ namespace KooliProjekt.IntegrationTests
 
         [Theory]
         [InlineData("/Home/Privacy")]
-
         public async Task Get_AnonymousCanAccessPrivacy(string url)
         {
             // Arrange
@@ -36,7 +36,6 @@ namespace KooliProjekt.IntegrationTests
             // Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
-
         }
-     }
+    }
 }

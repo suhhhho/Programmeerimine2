@@ -46,26 +46,5 @@ namespace KooliProjekt.Services
                 await _context.SaveChangesAsync();
             }
         }
-
-        public Task<PagedResult<Cars>> List(CarsSearch search)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        Task<Cars> ICarsService.Get(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task ICarsService.Save(Cars cars)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task ICarsService.Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
