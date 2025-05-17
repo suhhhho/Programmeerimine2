@@ -53,7 +53,7 @@ namespace KooliProjekt.WpfApp
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка в Execute RelayCommand: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error in Execute RelayCommand: {ex.Message}");
             }
         }
     }

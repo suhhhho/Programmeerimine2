@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KooliProjekt.WpfApp"
         mc:Ignorable="d"
-        Title="Управление арендой автомобилей" Height="450" Width="800">
+        Title="Car rent control" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -20,17 +20,17 @@
                   CanUserAddRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Название" Binding="{Binding Title}" Width="*" />
-                <DataGridTextColumn Header="Цена за минуту" Binding="{Binding rental_rate_per_minute}" Width="120" />
-                <DataGridTextColumn Header="Цена за км" Binding="{Binding rental_rate_per_km}" Width="120" />
-                <DataGridCheckBoxColumn Header="Доступен" Binding="{Binding is_available}" Width="80" />
+                <DataGridTextColumn Header="Name" Binding="{Binding Title}" Width="*" />
+                <DataGridTextColumn Header="Price per minute" Binding="{Binding rental_rate_per_minute}" Width="120" />
+                <DataGridTextColumn Header="Price per km" Binding="{Binding rental_rate_per_km}" Width="120" />
+                <DataGridCheckBoxColumn Header="Available" Binding="{Binding is_available}" Width="80" />
             </DataGrid.Columns>
         </DataGrid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0,10,10">
-            <Button Content="Добавить" Command="{Binding AddCommand}" Width="100" Margin="0,0,10,0" />
-            <Button Content="Сохранить" Command="{Binding SaveCommand}" Width="100" Margin="0,0,10,0" />
-            <Button Content="Удалить" Command="{Binding DeleteCommand}" Width="100" />
+            <Button Content="Add" Command="{Binding AddCommand}" Width="100" Margin="0,0,10,0" />
+            <Button Content="Save" Command="{Binding SaveCommand}" Width="100" Margin="0,0,10,0" />
+            <Button Content="Delete" Command="{Binding DeleteCommand}" Width="100" />
         </StackPanel>
     </Grid>
 </Window>

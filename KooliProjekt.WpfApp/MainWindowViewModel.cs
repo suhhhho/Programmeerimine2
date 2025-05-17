@@ -57,7 +57,7 @@ namespace KooliProjekt.WpfApp
                 var newCar = new Car
                 {
                     Id = 0,
-                    Title = "Новый автомобиль",
+                    Title = "New car",
                     rental_rate_per_minute = 0.5m,
                     rental_rate_per_km = 1.0m,
                     is_available = true

@@ -25,7 +25,7 @@ namespace KooliProjekt.WpfApp.Api
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка при получении списка автомобилей: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error getting list of cars: {ex.Message}");
                 return new List<Car>();
             }
         }
@@ -49,7 +49,7 @@ namespace KooliProjekt.WpfApp.Api
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка при сохранении автомобиля: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error saving list of cars: {ex.Message}");
                 throw;
             }
         }
@@ -63,7 +63,7 @@ namespace KooliProjekt.WpfApp.Api
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка при удалении автомобиля: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error deleting list of cars: {ex.Message}");
                 throw;
             }
         }
