@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace KooliProjekt.WpfApp
@@ -27,7 +23,16 @@ namespace KooliProjekt.WpfApp
 
         public bool CanExecute(object parameter)
         {
-            return _canExecute == null || _canExecute((T)parameter);
+            try
+            {
+                return _canExecute == null ||
+                       (parameter == null && _canExecute(default(T)) ||
+                        parameter is T && _canExecute((T)parameter));
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public event EventHandler CanExecuteChanged
@@ -38,7 +43,18 @@ namespace KooliProjekt.WpfApp
 
         public void Execute(object parameter)
         {
-            _execute((T)parameter);
+            try
+            {
+                // Если параметр null, передаем default(T), иначе пытаемся привести к T
+                if (parameter == null)
+                    _execute(default(T));
+                else if (parameter is T)
+                    _execute((T)parameter);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка в Execute RelayCommand: {ex.Message}");
+            }
         }
     }
 }

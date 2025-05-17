@@ -18,25 +18,49 @@ namespace KooliProjekt.WpfApp.Api
 
         public async Task<IList<Car>> List()
         {
-            var result = await _httpClient.GetFromJsonAsync<List<Car>>("");
-            return result;
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<List<Car>>("");
+                return result ?? new List<Car>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка при получении списка автомобилей: {ex.Message}");
+                return new List<Car>(); // Возвращаем пустой список в случае ошибки
+            }
         }
 
         public async Task Save(Car car)
         {
-            if (car.Id == 0)
+            try
             {
-                await _httpClient.PostAsJsonAsync("", car);
+                if (car.Id == 0)
+                {
+                    await _httpClient.PostAsJsonAsync("", car);
+                }
+                else
+                {
+                    await _httpClient.PutAsJsonAsync(car.Id.ToString(), car);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await _httpClient.PutAsJsonAsync(car.Id.ToString(), car);
+                System.Diagnostics.Debug.WriteLine($"Ошибка при сохранении автомобиля: {ex.Message}");
+                throw; // Можно перехватить это исключение в ViewModel
             }
         }
 
         public async Task Delete(int id)
         {
-            await _httpClient.DeleteAsync(id.ToString());
+            try
+            {
+                await _httpClient.DeleteAsync(id.ToString());
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка при удалении автомобиля: {ex.Message}");
+                throw; // Можно перехватить это исключение в ViewModel
+            }
         }
 
         public void Dispose()
