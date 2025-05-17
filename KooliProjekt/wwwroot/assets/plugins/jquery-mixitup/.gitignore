@@ -1,5 +1,4 @@
-# OS generated files #
-######################
+# OS generated files
 .DS_Store
 .DS_Store?
 ._*
@@ -8,3 +7,48 @@
 Icon?
 ehthumbs.db
 Thumbs.db
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio files
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# NuGet
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Cache files
+.cache/
+**/[Cc]ache/
+**/.nuget/packages/
+.dotnet/
+TelemetryStorageService/
+
+# Docker cache
+*_[Dd]ocker[Cc]ontainer.dotnet[Uu]ser[Ll]evel[Cc]ache
+*.[Mm]achined.dotnet[Uu]ser[Ll]evel[Cc]ache
+
+# MSTest
+TestResults/
+
+# Build results
+[Bb]uild/
