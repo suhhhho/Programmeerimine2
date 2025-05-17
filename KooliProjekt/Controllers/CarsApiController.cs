@@ -3,8 +3,6 @@ using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace KooliProjekt.Controllers
 {
     [ExcludeFromCodeCoverage]
@@ -19,63 +17,58 @@ namespace KooliProjekt.Controllers
             _service = service;
         }
 
-        // GET: api/<TodoListsApiController>
+        // GET: api/Cars
         [HttpGet]
         public async Task<IEnumerable<Cars>> Get()
         {
-            PagedResult<Cars> result = await _service.List(1, 10000, null);
-
+            var result = await _service.List(1, 10000, null);
             return result.Results;
         }
 
-        // GET api/<TodoListsApiController>/5
+        // GET api/Cars/5
         [HttpGet("{id}")]
         public async Task<object> Get(int id)
         {
-            var list = await _service.Get(id);
-            if (list == null)
+            var car = await _service.Get(id);
+            if (car == null)
             {
                 return NotFound();
             }
-
-            return list;
+            return car;
         }
 
-        // POST api/<TodoListsApiController>
+        // POST api/Cars
         [HttpPost]
-        public async Task<object> Post([FromBody] Cars list)
+        public async Task<object> Post([FromBody] Cars car)
         {
-            await _service.Save(list);
-
-            return Ok(list);
+            await _service.Save(car);
+            return Ok(car);
         }
 
-        // PUT api/<TodoListsApiController>/5
+        // PUT api/Cars/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Cars list)
+        public async Task<IActionResult> Put(int id, [FromBody] Cars car)
         {
-            if (id != list.Id)
+            if (id != car.Id)
             {
                 return BadRequest();
             }
 
-            await _service.Save(list);
-
+            await _service.Save(car);
             return Ok();
         }
 
-        // DELETE api/<TodoListsApiController>/5
+        // DELETE api/Cars/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var list = await _service.Get(id);
-            if (list == null)
+            var car = await _service.Get(id);
+            if (car == null)
             {
                 return NotFound();
             }
 
             await _service.Delete(id);
-
             return Ok();
         }
     }

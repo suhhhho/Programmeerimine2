@@ -13,36 +13,43 @@
     <thead>
         <tr>
             <th>
-                rental_rate_per_minute
+                Название
             </th>
             <th>
-                rental_rate_per_km
+                Цена за минуту
             </th>
             <th>
-                is_available
+                Цена за км
+            </th>
+            <th>
+                Доступен
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Data.Results) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.rental_rate_per_minute)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.rental_rate_per_km)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.is_available)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Data.Results)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.rental_rate_per_minute)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.rental_rate_per_km)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.is_available)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 @(await Component.InvokeAsync<PagerViewComponent>(Model.Data))
