@@ -26,7 +26,7 @@ namespace KooliProjekt.WpfApp.Api
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка при получении списка автомобилей: {ex.Message}");
-                return new List<Car>(); // Возвращаем пустой список в случае ошибки
+                return new List<Car>();
             }
         }
 
@@ -36,17 +36,21 @@ namespace KooliProjekt.WpfApp.Api
             {
                 if (car.Id == 0)
                 {
-                    await _httpClient.PostAsJsonAsync("", car);
+                    // Для новых объектов используем POST
+                    var response = await _httpClient.PostAsJsonAsync("", car);
+                    response.EnsureSuccessStatusCode();
                 }
                 else
                 {
-                    await _httpClient.PutAsJsonAsync(car.Id.ToString(), car);
+                    // Для существующих объектов используем PUT
+                    var response = await _httpClient.PutAsJsonAsync(car.Id.ToString(), car);
+                    response.EnsureSuccessStatusCode();
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка при сохранении автомобиля: {ex.Message}");
-                throw; // Можно перехватить это исключение в ViewModel
+                throw;
             }
         }
 
@@ -54,12 +58,13 @@ namespace KooliProjekt.WpfApp.Api
         {
             try
             {
-                await _httpClient.DeleteAsync(id.ToString());
+                var response = await _httpClient.DeleteAsync(id.ToString());
+                response.EnsureSuccessStatusCode();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка при удалении автомобиля: {ex.Message}");
-                throw; // Можно перехватить это исключение в ViewModel
+                throw;
             }
         }
 

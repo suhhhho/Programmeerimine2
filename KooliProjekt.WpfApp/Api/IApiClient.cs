@@ -1,4 +1,7 @@
-﻿namespace KooliProjekt.WpfApp.Api
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace KooliProjekt.WpfApp.Api
 {
     public interface IApiClient
     {

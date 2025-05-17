@@ -2,16 +2,14 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
 
 namespace KooliProjekt.WpfApp
 {
-    public class MainWindowViewModel : IDisposable
+    public class MainWindowViewModel : NotifyPropertyChangedBase, IDisposable
     {
         private readonly IApiClient _apiClient;
-        private readonly Dispatcher _dispatcher;
+        private Car _selectedCar;
 
         public ObservableCollection<Car> Cars { get; private set; }
 
@@ -23,106 +21,69 @@ namespace KooliProjekt.WpfApp
         public MainWindowViewModel(IApiClient apiClient)
         {
             _apiClient = apiClient;
-            _dispatcher = Dispatcher.CurrentDispatcher;
 
             Cars = new ObservableCollection<Car>();
 
             SaveCommand = new RelayCommand<Car>(async _ =>
             {
-                try
-                {
-                    // Execute method
-                    if (SelectedCar != null)
-                    {
-                        await _apiClient.Save(SelectedCar);
-                        await Load(); // Обновляем список после сохранения
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ShowError($"Ошибка при сохранении: {ex.Message}");
-                }
+                // Execute method
+                if (SelectedCar == null) return;
+
+                await _apiClient.Save(SelectedCar);
+                await Load(); // Обновляем список после сохранения
             });
 
             DeleteCommand = new RelayCommand<Car>(async _ =>
             {
-                try
-                {
-                    // Execute method
-                    if (SelectedCar == null) return;
+                // Execute method
+                if (SelectedCar == null) return;
 
-                    if (ConfirmDelete != null)
+                if (ConfirmDelete != null)
+                {
+                    var result = ConfirmDelete(SelectedCar);
+                    if (!result)
                     {
-                        var result = ConfirmDelete(SelectedCar);
-                        if (!result)
-                        {
-                            return;
-                        }
+                        return;
                     }
+                }
 
-                    await _apiClient.Delete(SelectedCar.Id);
-                    Cars.Remove(SelectedCar);
-                }
-                catch (Exception ex)
-                {
-                    ShowError($"Ошибка при удалении: {ex.Message}");
-                }
+                await _apiClient.Delete(SelectedCar.Id);
+                Cars.Remove(SelectedCar);
             });
 
             AddCommand = new RelayCommand<Car>(_ =>
             {
-                try
+                // Execute method
+                var newCar = new Car
                 {
-                    // Execute method
-                    var newCar = new Car
-                    {
-                        Id = 0,
-                        Title = "Новый автомобиль",
-                        rental_rate_per_minute = 0.5m,
-                        rental_rate_per_km = 1.0m,
-                        is_available = true
-                    };
+                    Id = 0,
+                    Title = "Новый автомобиль",
+                    rental_rate_per_minute = 0.5m,
+                    rental_rate_per_km = 1.0m,
+                    is_available = true
+                };
 
-                    Cars.Add(newCar);
-                    SelectedCar = newCar;
-                }
-                catch (Exception ex)
-                {
-                    ShowError($"Ошибка при добавлении: {ex.Message}");
-                }
-            });
-        }
-
-        private void ShowError(string message)
-        {
-            _dispatcher.InvokeAsync(() =>
-            {
-                MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                Cars.Add(newCar);
+                SelectedCar = newCar;
             });
         }
 
         public async Task Load()
         {
-            try
+            Cars.Clear();
+            var cars = await _apiClient.List();
+            foreach (var car in cars)
             {
-                var cars = await _apiClient.List();
-
-                _dispatcher.InvokeAsync(() =>
-                {
-                    Cars.Clear();
-                    foreach (var car in cars)
-                    {
-                        Cars.Add(car);
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                ShowError($"Ошибка при загрузке данных: {ex.Message}");
+                Cars.Add(car);
             }
         }
 
-        public Car SelectedCar { get; set; }
+        // Это важная часть - правильная реализация свойства SelectedCar с уведомлением об изменениях
+        public Car SelectedCar
+        {
+            get => _selectedCar;
+            set => SetProperty(ref _selectedCar, value);
+        }
 
         public void Dispose()
         {
