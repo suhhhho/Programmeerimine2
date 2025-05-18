@@ -1,0 +1,64 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>Home</PageTitle>
+
+<h1>Cars List</h1>
+
+<p>This component demonstrates fetching car data from the API.</p>
+
+@if (cars == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Rate per Minute</th>
+                <th>Rate per KM</th>
+                <th>Available</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in cars)
+            {
+                <tr>
+                    <td>@car.Id</td>
+                    <td>@car.Title</td>
+                    <td>@car.rental_rate_per_minute</td>
+                    <td>@car.rental_rate_per_km</td>
+                    <td>@(car.is_available ? "Yes" : "No")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Car[]? cars;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            cars = await Http.GetFromJsonAsync<Car[]>("Cars");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading data: {ex.Message}");
+        }
+    }
+
+    public class Car
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public decimal rental_rate_per_minute { get; set; }
+        public decimal rental_rate_per_km { get; set; }
+        public bool is_available { get; set; }
+    }
+}
