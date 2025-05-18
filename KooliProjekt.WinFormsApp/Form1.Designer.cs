@@ -36,7 +36,14 @@
             NewButton = new Button();
             SaveButton = new Button();
             DeleteButton = new Button();
+            RatePerMinuteLabel = new Label();
+            RatePerMinuteField = new NumericUpDown();
+            RatePerKmLabel = new Label();
+            RatePerKmField = new NumericUpDown();
+            IsAvailableCheckBox = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)TodoListsGrid).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)RatePerMinuteField).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)RatePerKmField).BeginInit();
             SuspendLayout();
             // 
             // TodoListsGrid
@@ -82,9 +89,57 @@
             TitleField.Size = new Size(281, 23);
             TitleField.TabIndex = 4;
             // 
+            // RatePerMinuteLabel
+            // 
+            RatePerMinuteLabel.AutoSize = true;
+            RatePerMinuteLabel.Location = new Point(430, 92);
+            RatePerMinuteLabel.Name = "RatePerMinuteLabel";
+            RatePerMinuteLabel.Size = new Size(64, 15);
+            RatePerMinuteLabel.TabIndex = 8;
+            RatePerMinuteLabel.Text = "Rate/Min:";
+            // 
+            // RatePerMinuteField
+            // 
+            RatePerMinuteField.DecimalPlaces = 2;
+            RatePerMinuteField.Increment = new decimal(new int[] { 10, 0, 0, 131072 });
+            RatePerMinuteField.Location = new Point(507, 90);
+            RatePerMinuteField.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
+            RatePerMinuteField.Name = "RatePerMinuteField";
+            RatePerMinuteField.Size = new Size(120, 23);
+            RatePerMinuteField.TabIndex = 9;
+            // 
+            // RatePerKmLabel
+            // 
+            RatePerKmLabel.AutoSize = true;
+            RatePerKmLabel.Location = new Point(437, 131);
+            RatePerKmLabel.Name = "RatePerKmLabel";
+            RatePerKmLabel.Size = new Size(57, 15);
+            RatePerKmLabel.TabIndex = 10;
+            RatePerKmLabel.Text = "Rate/KM:";
+            // 
+            // RatePerKmField
+            // 
+            RatePerKmField.DecimalPlaces = 2;
+            RatePerKmField.Increment = new decimal(new int[] { 10, 0, 0, 131072 });
+            RatePerKmField.Location = new Point(507, 129);
+            RatePerKmField.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
+            RatePerKmField.Name = "RatePerKmField";
+            RatePerKmField.Size = new Size(120, 23);
+            RatePerKmField.TabIndex = 11;
+            // 
+            // IsAvailableCheckBox
+            // 
+            IsAvailableCheckBox.AutoSize = true;
+            IsAvailableCheckBox.Location = new Point(507, 168);
+            IsAvailableCheckBox.Name = "IsAvailableCheckBox";
+            IsAvailableCheckBox.Size = new Size(75, 19);
+            IsAvailableCheckBox.TabIndex = 12;
+            IsAvailableCheckBox.Text = "Available";
+            IsAvailableCheckBox.UseVisualStyleBackColor = true;
+            // 
             // NewButton
             // 
-            NewButton.Location = new Point(522, 96);
+            NewButton.Location = new Point(522, 203);
             NewButton.Name = "NewButton";
             NewButton.Size = new Size(75, 23);
             NewButton.TabIndex = 5;
@@ -93,7 +148,7 @@
             // 
             // SaveButton
             // 
-            SaveButton.Location = new Point(603, 96);
+            SaveButton.Location = new Point(603, 203);
             SaveButton.Name = "SaveButton";
             SaveButton.Size = new Size(75, 23);
             SaveButton.TabIndex = 6;
@@ -102,7 +157,7 @@
             // 
             // DeleteButton
             // 
-            DeleteButton.Location = new Point(684, 96);
+            DeleteButton.Location = new Point(684, 203);
             DeleteButton.Name = "DeleteButton";
             DeleteButton.Size = new Size(75, 23);
             DeleteButton.TabIndex = 7;
@@ -114,6 +169,11 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(IsAvailableCheckBox);
+            Controls.Add(RatePerKmField);
+            Controls.Add(RatePerKmLabel);
+            Controls.Add(RatePerMinuteField);
+            Controls.Add(RatePerMinuteLabel);
             Controls.Add(DeleteButton);
             Controls.Add(SaveButton);
             Controls.Add(NewButton);
@@ -125,6 +185,8 @@
             Name = "Form1";
             Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)TodoListsGrid).EndInit();
+            ((System.ComponentModel.ISupportInitialize)RatePerMinuteField).EndInit();
+            ((System.ComponentModel.ISupportInitialize)RatePerKmField).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -139,5 +201,10 @@
         private Button NewButton;
         private Button SaveButton;
         private Button DeleteButton;
+        private Label RatePerMinuteLabel;
+        private NumericUpDown RatePerMinuteField;
+        private Label RatePerKmLabel;
+        private NumericUpDown RatePerKmField;
+        private CheckBox IsAvailableCheckBox;
     }
 }
