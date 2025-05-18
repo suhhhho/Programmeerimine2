@@ -62,8 +62,32 @@ namespace KooliProjekt.BlazorApp.Api
                     response = await _httpClient.PutAsJsonAsync($"Cars/{car.Id}", car);
                 }
 
-                response.EnsureSuccessStatusCode();
-                return Result.Ok();
+                if (response.IsSuccessStatusCode)
+                {
+                    return Result.Ok();
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    // Handle validation errors from server
+                    try
+                    {
+                        var validationProblems = await response.Content.ReadFromJsonAsync<Dictionary<string, List<string>>>();
+                        if (validationProblems != null && validationProblems.Count > 0)
+                        {
+                            return Result.Fail(validationProblems);
+                        }
+                    }
+                    catch
+                    {
+                        // If we can't parse the validation errors, fall back to a general message
+                    }
+
+                    return Result.Fail("Invalid data submitted");
+                }
+                else
+                {
+                    return Result.Fail($"Error: {response.StatusCode}");
+                }
             }
             catch (Exception ex)
             {

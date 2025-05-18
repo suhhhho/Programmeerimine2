@@ -2,6 +2,7 @@
 @inject IApiClient ApiClient
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@using Microsoft.AspNetCore.Components.Forms
 
 <PageTitle>@(isNew ? "Add New Car" : "Edit Car")</PageTitle>
 
@@ -20,23 +21,38 @@
 }
 else
 {
-    <EditForm Model="@car" OnValidSubmit="SaveCar">
+    <EditForm Model="@car" OnValidSubmit="SaveCar" Context="formContext">
         <DataAnnotationsValidator />
         <ValidationSummary />
+
+        @if (serverValidationErrors.Count > 0)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var error in serverValidationErrors)
+                    {
+                        <li>@error.Key: @string.Join(", ", error.Value)</li>
+                    }
+                </ul>
+            </div>
+        }
 
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
             <InputText id="title" class="form-control" @bind-Value="car.Title" />
+            <ValidationMessage For="@(() => car.Title)" />
         </div>
 
         <div class="mb-3">
             <label for="ratePerMinute" class="form-label">Rate per Minute</label>
             <InputNumber id="ratePerMinute" class="form-control" @bind-Value="car.rental_rate_per_minute" />
+            <ValidationMessage For="@(() => car.rental_rate_per_minute)" />
         </div>
 
         <div class="mb-3">
             <label for="ratePerKm" class="form-label">Rate per KM</label>
             <InputNumber id="ratePerKm" class="form-control" @bind-Value="car.rental_rate_per_km" />
+            <ValidationMessage For="@(() => car.rental_rate_per_km)" />
         </div>
 
         <div class="mb-3 form-check">
@@ -59,6 +75,7 @@ else
     private bool isNew => Id == 0;
     private bool loading = true;
     private string? errorMessage;
+    private Dictionary<string, List<string>> serverValidationErrors = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -95,6 +112,8 @@ else
 
     private async Task SaveCar()
     {
+        serverValidationErrors.Clear();
+
         var result = await ApiClient.Save(car);
         if (result.Success)
         {
@@ -102,7 +121,14 @@ else
         }
         else
         {
-            errorMessage = $"Error saving car: {result.ErrorMessage}";
+            if (result.HasValidationErrors)
+            {
+                serverValidationErrors = result.ValidationErrors;
+            }
+            else
+            {
+                errorMessage = $"Error saving car: {result.ErrorMessage}";
+            }
         }
     }
 

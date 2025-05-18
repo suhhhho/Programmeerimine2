@@ -1,0 +1,100 @@
+﻿@page "/validation-test"
+@inject IApiClient ApiClient
+
+<h3>Validation Test</h3>
+
+<div class="mb-4">
+    <h4>Client Validation Test</h4>
+    <EditForm Model="@clientCar" OnValidSubmit="OnClientValidSubmit">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <InputText id="title" class="form-control" @bind-Value="clientCar.Title" />
+            <ValidationMessage For="@(() => clientCar.Title)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="ratePerMin" class="form-label">Rate Per Minute</label>
+            <InputNumber id="ratePerMin" class="form-control" @bind-Value="clientCar.rental_rate_per_minute" />
+            <ValidationMessage For="@(() => clientCar.rental_rate_per_minute)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="ratePerKm" class="form-label">Rate Per KM</label>
+            <InputNumber id="ratePerKm" class="form-control" @bind-Value="clientCar.rental_rate_per_km" />
+            <ValidationMessage For="@(() => clientCar.rental_rate_per_km)" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </EditForm>
+
+    @if (clientSubmitSuccess)
+    {
+        <div class="alert alert-success mt-3">Client validation passed!</div>
+    }
+</div>
+
+<div class="mb-4">
+    <h4>Server Validation Test</h4>
+    <div class="mb-3">
+        <button class="btn btn-danger" @onclick="TestServerValidation">Test Server Validation</button>
+    </div>
+
+    @if (serverResult != null)
+    {
+        <div class="@(serverResult.Success ? "alert alert-success" : "alert alert-danger") mt-3">
+            <p><strong>Success:</strong> @serverResult.Success</p>
+
+            @if (!serverResult.Success)
+            {
+                <p><strong>Error:</strong> @serverResult.ErrorMessage</p>
+
+                @if (serverResult.HasValidationErrors)
+                {
+                    <div>
+                        <strong>Validation Errors:</strong>
+                        <ul>
+                            @foreach (var error in serverResult.ValidationErrors)
+                            {
+                                <li>
+                                    <strong>@error.Key:</strong>
+                                    <ul>
+                                        @foreach (var message in error.Value)
+                                        {
+                                            <li>@message</li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private Car clientCar = new Car();
+    private bool clientSubmitSuccess = false;
+    private Result serverResult = null;
+
+    private void OnClientValidSubmit()
+    {
+        clientSubmitSuccess = true;
+    }
+
+    private async Task TestServerValidation()
+    {
+        // Create a Car with invalid values to test server validation
+        var invalidCar = new Car
+        {
+            Title = "",  // Empty title violates [Required]
+            rental_rate_per_minute = 0,  // Below minimum of 0.1
+            rental_rate_per_km = 101  // Above maximum of 100
+        };
+
+        serverResult = await ApiClient.Save(invalidCar);
+    }
+}

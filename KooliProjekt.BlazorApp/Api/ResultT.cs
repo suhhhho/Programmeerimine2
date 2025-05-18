@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace KooliProjekt.BlazorApp.Api
+﻿namespace KooliProjekt.BlazorApp.Api
 {
     public class Result<T> : Result
     {

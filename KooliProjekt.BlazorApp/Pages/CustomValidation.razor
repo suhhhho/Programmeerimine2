@@ -1,0 +1,137 @@
+﻿@page "/custom-validation"
+@inject IApiClient ApiClient
+@using Microsoft.AspNetCore.Components.Forms
+
+<h3>Custom Validation Example</h3>
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleValidSubmit">
+    <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <InputText id="title" class="form-control" @bind-Value="car.Title" />
+        <ValidationMessage For="@(() => car.Title)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="ratePerMinute" class="form-label">Rate per Minute</label>
+        <InputNumber id="ratePerMinute" class="form-control" @bind-Value="car.rental_rate_per_minute" />
+        <ValidationMessage For="@(() => car.rental_rate_per_minute)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="ratePerKm" class="form-label">Rate per KM</label>
+        <InputNumber id="ratePerKm" class="form-control" @bind-Value="car.rental_rate_per_km" />
+        <ValidationMessage For="@(() => car.rental_rate_per_km)" />
+    </div>
+
+    <div class="mb-3">
+        <button type="button" class="btn btn-info" @onclick="ValidateRates">Validate Rates</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+
+    <ValidationSummary />
+</EditForm>
+
+@if (saveSuccess)
+{
+    <div class="alert alert-success mt-3">
+        Car saved successfully!
+    </div>
+}
+
+@code {
+    private Car car = new Car();
+    private EditContext editContext;
+    private ValidationMessageStore messageStore;
+    private bool saveSuccess;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(car);
+        messageStore = new ValidationMessageStore(editContext);
+
+        // Subscribe to field changes to clear validation messages when a field changes
+        editContext.OnFieldChanged += HandleFieldChanged;
+    }
+
+    private void HandleFieldChanged(object sender, FieldChangedEventArgs args)
+    {
+        // Clear validation messages for the field that was changed
+        messageStore.Clear(args.FieldIdentifier);
+    }
+
+    private void ValidateRates()
+    {
+        // Clear any existing messages
+        messageStore.Clear();
+
+        // Custom complex validation logic
+        if (car.rental_rate_per_minute > 0 && car.rental_rate_per_km > 0)
+        {
+            // Check if minute rate and km rate are balanced
+            if (car.rental_rate_per_minute * 60 < car.rental_rate_per_km)
+            {
+                // Add a custom validation message about rate balance
+                messageStore.Add(editContext.Field(nameof(car.rental_rate_per_minute)),
+                    "Hourly rate should be at least equal to the cost of driving 1 km");
+                messageStore.Add(editContext.Field(nameof(car.rental_rate_per_km)),
+                    "KM rate is too high compared to time rate");
+            }
+        }
+
+        // Notify EditContext that validation state may have changed
+        editContext.NotifyValidationStateChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        // Create a combined validation approach
+        ValidateRates();
+
+        // If we have custom validation errors, don't proceed
+        if (!editContext.Validate())
+        {
+            return;
+        }
+
+        // Otherwise try to save
+        var result = await ApiClient.Save(car);
+        if (result.Success)
+        {
+            saveSuccess = true;
+            car = new Car(); // Reset the form
+            editContext = new EditContext(car);
+            messageStore = new ValidationMessageStore(editContext);
+            editContext.OnFieldChanged += HandleFieldChanged;
+        }
+        else
+        {
+            // If there are server-side validation errors, add them to our message store
+            if (result.HasValidationErrors)
+            {
+                foreach (var error in result.ValidationErrors)
+                {
+                    var fieldName = error.Key;
+                    var fieldIdentifier = new FieldIdentifier(car, fieldName);
+
+                    foreach (var message in error.Value)
+                    {
+                        messageStore.Add(fieldIdentifier, message);
+                    }
+                }
+
+                editContext.NotifyValidationStateChanged();
+            }
+
+            saveSuccess = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from the event when the component is disposed
+        if (editContext != null)
+        {
+            editContext.OnFieldChanged -= HandleFieldChanged;
+        }
+    }
+}
