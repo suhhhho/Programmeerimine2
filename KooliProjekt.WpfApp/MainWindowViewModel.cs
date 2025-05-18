@@ -18,6 +18,9 @@ namespace KooliProjekt.WpfApp
         public ICommand AddCommand { get; private set; }
         public Predicate<Car> ConfirmDelete { get; set; }
 
+        // Add the OnError action
+        public Action<string> OnError { get; set; }
+
         public MainWindowViewModel(IApiClient apiClient)
         {
             _apiClient = apiClient;
@@ -29,8 +32,15 @@ namespace KooliProjekt.WpfApp
                 // Execute method
                 if (SelectedCar == null) return;
 
-                await _apiClient.Save(SelectedCar);
-                await Load(); // Обновляем список после сохранения
+                var result = await _apiClient.Save(SelectedCar);
+                if (result.Success)
+                {
+                    await Load(); // Refresh list after saving
+                }
+                else
+                {
+                    OnError?.Invoke($"Failed to save car: {result.Error}");
+                }
             });
 
             DeleteCommand = new RelayCommand<Car>(async _ =>
@@ -40,15 +50,22 @@ namespace KooliProjekt.WpfApp
 
                 if (ConfirmDelete != null)
                 {
-                    var result = ConfirmDelete(SelectedCar);
-                    if (!result)
+                    var confirmResult = ConfirmDelete(SelectedCar);
+                    if (!confirmResult)
                     {
                         return;
                     }
                 }
 
-                await _apiClient.Delete(SelectedCar.Id);
-                Cars.Remove(SelectedCar);
+                var result = await _apiClient.Delete(SelectedCar.Id);
+                if (result.Success)
+                {
+                    Cars.Remove(SelectedCar);
+                }
+                else
+                {
+                    OnError?.Invoke($"Failed to delete car: {result.Error}");
+                }
             });
 
             AddCommand = new RelayCommand<Car>(_ =>
@@ -70,15 +87,22 @@ namespace KooliProjekt.WpfApp
 
         public async Task Load()
         {
-            Cars.Clear();
-            var cars = await _apiClient.List();
-            foreach (var car in cars)
+            var result = await _apiClient.List();
+            if (result.Success)
             {
-                Cars.Add(car);
+                Cars.Clear();
+                foreach (var car in result.Value)
+                {
+                    Cars.Add(car);
+                }
+            }
+            else
+            {
+                OnError?.Invoke($"Failed to load cars: {result.Error}");
             }
         }
 
-        // Это важная часть - правильная реализация свойства SelectedCar с уведомлением об изменениях
+        // Property implementation with notification
         public Car SelectedCar
         {
             get => _selectedCar;

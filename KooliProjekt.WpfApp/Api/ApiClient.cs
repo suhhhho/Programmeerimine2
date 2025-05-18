@@ -16,55 +16,57 @@ namespace KooliProjekt.WpfApp.Api
             _httpClient.BaseAddress = new Uri("https://localhost:7136/api/Cars/");
         }
 
-        public async Task<IList<Car>> List()
+        public async Task<Result<IList<Car>>> List()
         {
             try
             {
                 var result = await _httpClient.GetFromJsonAsync<List<Car>>("");
-                return result ?? new List<Car>();
+                return Result.Ok<IList<Car>>(result ?? new List<Car>());
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error getting list of cars: {ex.Message}");
-                return new List<Car>();
+                return Result.Fail<IList<Car>>(ex);
             }
         }
 
-        public async Task Save(Car car)
+        public async Task<Result> Save(Car car)
         {
             try
             {
                 if (car.Id == 0)
                 {
-                    // Для новых объектов используем POST
+                    // For new objects use POST
                     var response = await _httpClient.PostAsJsonAsync("", car);
                     response.EnsureSuccessStatusCode();
                 }
                 else
                 {
-                    // Для существующих объектов используем PUT
+                    // For existing objects use PUT
                     var response = await _httpClient.PutAsJsonAsync(car.Id.ToString(), car);
                     response.EnsureSuccessStatusCode();
                 }
+                return Result.Ok();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error saving list of cars: {ex.Message}");
-                throw;
+                System.Diagnostics.Debug.WriteLine($"Error saving car: {ex.Message}");
+                return Result.Fail(ex);
             }
         }
 
-        public async Task Delete(int id)
+        public async Task<Result> Delete(int id)
         {
             try
             {
                 var response = await _httpClient.DeleteAsync(id.ToString());
                 response.EnsureSuccessStatusCode();
+                return Result.Ok();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error deleting list of cars: {ex.Message}");
-                throw;
+                System.Diagnostics.Debug.WriteLine($"Error deleting car: {ex.Message}");
+                return Result.Fail(ex);
             }
         }
 

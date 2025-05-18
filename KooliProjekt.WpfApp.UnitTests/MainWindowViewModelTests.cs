@@ -3,7 +3,6 @@ using KooliProjekt.WpfApp.Api;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xunit;
@@ -24,7 +23,7 @@ namespace KooliProjekt.WpfApp.UnitTests
 
             // Setup default behavior for List to avoid null reference exceptions
             _apiClientMock.Setup(client => client.List())
-                .ReturnsAsync(new List<Car>());
+                .ReturnsAsync(Result.Ok<IList<Car>>(new List<Car>()));
 
             // Create the view model with mocked dependencies
             _viewModel = new MainWindowViewModel(_apiClientMock.Object);
@@ -63,7 +62,7 @@ namespace KooliProjekt.WpfApp.UnitTests
 
         // Modified test to check behavior in execute rather than CanExecute
         [Fact]
-        public async Task SaveCommand_Execute_DoesNothingWhenNothingSelected()
+        public void SaveCommand_Execute_DoesNothingWhenNothingSelected()
         {
             // Arrange
             _viewModel.SelectedCar = null;
@@ -106,10 +105,10 @@ namespace KooliProjekt.WpfApp.UnitTests
             _viewModel.SelectedCar = car;
 
             _apiClientMock.Setup(client => client.Save(car))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(Result.Ok());
 
             _apiClientMock.Setup(client => client.List())
-                .ReturnsAsync(new List<Car> { car });
+                .ReturnsAsync(Result.Ok<IList<Car>>(new List<Car> { car }));
 
             // Act
             _viewModel.SaveCommand.Execute(null);
@@ -122,7 +121,7 @@ namespace KooliProjekt.WpfApp.UnitTests
 
         // Modified test to check behavior in execute rather than CanExecute
         [Fact]
-        public async Task DeleteCommand_Execute_DoesNothingWhenNothingSelected()
+        public void DeleteCommand_Execute_DoesNothingWhenNothingSelected()
         {
             // Arrange
             _viewModel.SelectedCar = null;
@@ -168,7 +167,7 @@ namespace KooliProjekt.WpfApp.UnitTests
             };
 
             _apiClientMock.Setup(client => client.List())
-                .ReturnsAsync(testCars);
+                .ReturnsAsync(Result.Ok<IList<Car>>(testCars));
 
             // Act
             await _viewModel.Load();
@@ -224,7 +223,7 @@ namespace KooliProjekt.WpfApp.UnitTests
             _viewModel.ConfirmDelete = _ => true;
 
             _apiClientMock.Setup(client => client.Delete(1))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(Result.Ok());
 
             // Act
             _viewModel.DeleteCommand.Execute(null);
@@ -263,15 +262,15 @@ namespace KooliProjekt.WpfApp.UnitTests
 
             _apiClientMock.Setup(client => client.Save(It.IsAny<Car>()))
                 .Callback(() => saveExecuted = true)
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(Result.Ok());
 
             _apiClientMock.Setup(client => client.Delete(It.IsAny<int>()))
                 .Callback(() => deleteExecuted = true)
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(Result.Ok());
 
             // Set up List to return an empty list (to avoid NullReferenceException in Load)
             _apiClientMock.Setup(client => client.List())
-                .ReturnsAsync(new List<Car>());
+                .ReturnsAsync(Result.Ok<IList<Car>>(new List<Car>()));
 
             // Act - execute commands with no selection
             _viewModel.SaveCommand.Execute(null);
@@ -293,6 +292,45 @@ namespace KooliProjekt.WpfApp.UnitTests
             // Assert - commands should have executed their core logic
             Assert.True(saveExecuted);
             Assert.True(deleteExecuted);
+        }
+
+        [Fact]
+        public void OnError_IsCalled_WhenResultHasError()
+        {
+            // Arrange
+            var car = new Car { Id = 1, Title = "Toyota Corolla" };
+            _viewModel.SelectedCar = car;
+
+            string errorMessage = null;
+            _viewModel.OnError = msg => errorMessage = msg;
+
+            _apiClientMock.Setup(client => client.Save(car))
+                .ReturnsAsync(Result.Fail("Server error"));
+
+            // Act
+            _viewModel.SaveCommand.Execute(null);
+
+            // Assert
+            Assert.NotNull(errorMessage);
+            Assert.Contains("Server error", errorMessage);
+        }
+
+        [Fact]
+        public async Task Load_CallsOnError_WhenResultHasError()
+        {
+            // Arrange
+            string errorMessage = null;
+            _viewModel.OnError = msg => errorMessage = msg;
+
+            _apiClientMock.Setup(client => client.List())
+                .ReturnsAsync(Result.Fail<IList<Car>>("Failed to connect to server"));
+
+            // Act
+            await _viewModel.Load();
+
+            // Assert
+            Assert.NotNull(errorMessage);
+            Assert.Contains("Failed to connect to server", errorMessage);
         }
     }
 }
