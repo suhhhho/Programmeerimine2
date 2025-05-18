@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using KooliProjekt.Data;
 using System.Globalization;
 using Microsoft.Extensions.Options;
-using KooliProjekt.Services; // Добавьте этот using
+using KooliProjekt.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

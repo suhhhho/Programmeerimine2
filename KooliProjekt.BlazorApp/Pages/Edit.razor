@@ -1,0 +1,113 @@
+﻿@page "/edit/{Id:int}"
+@inject IApiClient ApiClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@(isNew ? "Add New Car" : "Edit Car")</PageTitle>
+
+<h1>@(isNew ? "Add New Car" : "Edit Car")</h1>
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+
+@if (loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="@car" OnValidSubmit="SaveCar">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <InputText id="title" class="form-control" @bind-Value="car.Title" />
+        </div>
+
+        <div class="mb-3">
+            <label for="ratePerMinute" class="form-label">Rate per Minute</label>
+            <InputNumber id="ratePerMinute" class="form-control" @bind-Value="car.rental_rate_per_minute" />
+        </div>
+
+        <div class="mb-3">
+            <label for="ratePerKm" class="form-label">Rate per KM</label>
+            <InputNumber id="ratePerKm" class="form-control" @bind-Value="car.rental_rate_per_km" />
+        </div>
+
+        <div class="mb-3 form-check">
+            <InputCheckbox id="isAvailable" class="form-check-input" @bind-Value="car.is_available" />
+            <label class="form-check-label" for="isAvailable">Available</label>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Car car = new Car();
+    private bool isNew => Id == 0;
+    private bool loading = true;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (isNew)
+        {
+            car = new Car
+            {
+                Title = "New Car",
+                rental_rate_per_minute = 0.5m,
+                rental_rate_per_km = 1.0m,
+                is_available = true
+            };
+            loading = false;
+        }
+        else
+        {
+            await LoadCar();
+        }
+    }
+
+    private async Task LoadCar()
+    {
+        var result = await ApiClient.GetById(Id);
+        if (result.Success)
+        {
+            car = result.Value!;
+        }
+        else
+        {
+            errorMessage = $"Error loading car: {result.ErrorMessage}";
+        }
+        loading = false;
+    }
+
+    private async Task SaveCar()
+    {
+        var result = await ApiClient.Save(car);
+        if (result.Success)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            errorMessage = $"Error saving car: {result.ErrorMessage}";
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

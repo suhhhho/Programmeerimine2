@@ -1,11 +1,24 @@
 ﻿@page "/"
-@inject HttpClient Http
+@inject IApiClient ApiClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Home</PageTitle>
 
 <h1>Cars List</h1>
 
 <p>This component demonstrates fetching car data from the API.</p>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="AddNewCar">Add New Car</button>
+</div>
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
 
 @if (cars == null)
 {
@@ -21,6 +34,7 @@ else
                 <th>Rate per Minute</th>
                 <th>Rate per KM</th>
                 <th>Available</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -32,6 +46,10 @@ else
                     <td>@car.rental_rate_per_minute</td>
                     <td>@car.rental_rate_per_km</td>
                     <td>@(car.is_available ? "Yes" : "No")</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" @onclick="() => EditCar(car.Id)">Edit</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteCar(car.Id)">Delete</button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -39,26 +57,58 @@ else
 }
 
 @code {
-    private Car[]? cars;
+    private IList<Car>? cars;
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCars();
+    }
+
+    private async Task LoadCars()
+    {
         try
         {
-            cars = await Http.GetFromJsonAsync<Car[]>("Cars");
+            errorMessage = null;
+            var result = await ApiClient.List();
+            if (result.Success)
+            {
+                cars = result.Value;
+            }
+            else
+            {
+                errorMessage = $"Error loading data: {result.ErrorMessage}";
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading data: {ex.Message}");
+            errorMessage = $"Error: {ex.Message}";
         }
     }
 
-    public class Car
+    private void AddNewCar()
     {
-        public int Id { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public decimal rental_rate_per_minute { get; set; }
-        public decimal rental_rate_per_km { get; set; }
-        public bool is_available { get; set; }
+        NavigationManager.NavigateTo("/edit/0");
+    }
+
+    private void EditCar(int id)
+    {
+        NavigationManager.NavigateTo($"/edit/{id}");
+    }
+
+    private async Task DeleteCar(int id)
+    {
+        if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete this car?"))
+            return;
+
+        var result = await ApiClient.Delete(id);
+        if (result.Success)
+        {
+            await LoadCars();
+        }
+        else
+        {
+            errorMessage = $"Failed to delete car: {result.ErrorMessage}";
+        }
     }
 }
