@@ -1,0 +1,120 @@
+﻿@page "/invoices"
+@using System
+@using System.Collections.Generic
+@using KooliProjekt.BlazorApp.Api
+@using System.ComponentModel.DataAnnotations
+@inject IApiClient ApiClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Invoices</PageTitle>
+
+<h1>Invoice List</h1>
+
+<p>This component demonstrates fetching invoice data from the API.</p>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="AddNewInvoice">Add New Invoice</button>
+</div>
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+
+@if (invoices == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Invoice Number</th>
+                <th>Title</th>
+                <th>Invoice Date</th>
+                <th>Due Date</th>
+                <th>Related Rent</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var invoice in invoices)
+            {
+                <tr>
+                    <td>@invoice.Id</td>
+                    <td>@invoice.InvoiceNo</td>
+                    <td>@invoice.Title</td>
+                    <td>@invoice.InvoiceDate.ToShortDateString()</td>
+                    <td>@invoice.DueDate.ToShortDateString()</td>
+                    <td>@(invoice.RentId.HasValue ? invoice.RentId.Value.ToString() : "None")</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" @onclick="() => EditInvoice(invoice.Id)">Edit</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteInvoice(invoice.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IList<KooliProjekt.BlazorApp.Api.Invoice>? invoices;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadInvoices();
+    }
+
+    private async Task LoadInvoices()
+    {
+        try
+        {
+            errorMessage = null;
+            var result = await ApiClient.ListInvoices();
+            if (result.Success)
+            {
+                invoices = result.Value;
+            }
+            else
+            {
+                errorMessage = $"Error loading data: {result.Error}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    private void AddNewInvoice()
+    {
+        NavigationManager.NavigateTo("/invoice/edit/0");
+    }
+
+    private void EditInvoice(int id)
+    {
+        NavigationManager.NavigateTo($"/invoice/edit/{id}");
+    }
+
+    private async Task DeleteInvoice(int id)
+    {
+        if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete this invoice?"))
+            return;
+
+        var result = await ApiClient.DeleteInvoice(id);
+        if (result.Success)
+        {
+            await LoadInvoices();
+        }
+        else
+        {
+            errorMessage = $"Error deleting invoice: {result.Error}";
+        }
+    }
+}

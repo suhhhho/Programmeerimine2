@@ -1,0 +1,161 @@
+﻿@page "/invoice/edit/{id:int}"
+@using System
+@using System.Collections.Generic
+@using KooliProjekt.BlazorApp.Api
+@using System.ComponentModel.DataAnnotations
+@inject IApiClient ApiClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@(Id == 0 ? "Add Invoice" : "Edit Invoice")</PageTitle>
+
+<h1>@(Id == 0 ? "Add Invoice" : "Edit Invoice")</h1>
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+
+@if (invoice == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-6">
+            <EditForm Model="invoice" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <InputText id="title" @bind-Value="invoice.Title" class="form-control" />
+                    <ValidationMessage For="@(() => invoice.Title)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="invoiceNo" class="form-label">Invoice Number</label>
+                    <InputNumber id="invoiceNo" @bind-Value="invoice.InvoiceNo" class="form-control" />
+                    <ValidationMessage For="@(() => invoice.InvoiceNo)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="invoiceDate" class="form-label">Invoice Date</label>
+                    <InputDate id="invoiceDate" @bind-Value="invoice.InvoiceDate" class="form-control" />
+                    <ValidationMessage For="@(() => invoice.InvoiceDate)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="dueDate" class="form-label">Due Date</label>
+                    <InputDate id="dueDate" @bind-Value="invoice.DueDate" class="form-control" />
+                    <ValidationMessage For="@(() => invoice.DueDate)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="rentId" class="form-label">Related Rent</label>
+                    <InputSelect id="rentId" @bind-Value="invoice.RentId" class="form-control">
+                        <option value="">-- Select Rent --</option>
+                        @if (rents != null)
+                        {
+                            @foreach (var rent in rents)
+                            {
+                                <option value="@rent.Id">@rent.Title (#@rent.Id)</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private KooliProjekt.BlazorApp.Api.Invoice? invoice;
+    private IList<KooliProjekt.BlazorApp.Api.Rent>? rents;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRents();
+
+        if (Id == 0)
+        {
+            // New invoice
+            invoice = new KooliProjekt.BlazorApp.Api.Invoice
+                {
+                    InvoiceDate = DateTime.Now,
+                    DueDate = DateTime.Now.AddDays(30),
+                    Title = string.Empty
+                };
+        }
+        else
+        {
+            // Load existing invoice
+            var result = await ApiClient.GetInvoiceById(Id);
+            if (result.Success)
+            {
+                invoice = result.Value;
+
+                // Ensure Title is not null
+                if (invoice.Title == null)
+                {
+                    invoice.Title = string.Empty;
+                }
+            }
+            else
+            {
+                errorMessage = $"Error loading invoice: {result.Error}";
+                NavigationManager.NavigateTo("/invoices");
+            }
+        }
+    }
+
+    private async Task LoadRents()
+    {
+        var result = await ApiClient.ListRents();
+        if (result.Success)
+        {
+            rents = result.Value;
+        }
+        else
+        {
+            errorMessage = $"Error loading rents: {result.Error}";
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        // Ensure we're not sending null values
+        if (invoice.Title == null)
+        {
+            invoice.Title = string.Empty;
+        }
+
+        var result = await ApiClient.SaveInvoice(invoice);
+        if (result.Success)
+        {
+            NavigationManager.NavigateTo("/invoices");
+        }
+        else
+        {
+            errorMessage = $"Error saving invoice: {result.Error}";
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/invoices");
+    }
+}
+
