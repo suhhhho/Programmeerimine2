@@ -66,16 +66,14 @@ namespace KooliProjekt.IntegrationTests
             var createPage = await _client.GetAsync("/Cars/Create");
             var pageContent = await createPage.Content.ReadAsStringAsync();
 
-            // Создаем новую машину с заданными свойствами напрямую через контекст базы данных,
-            // чтобы избежать проблем с привязкой формы
             var car = new Cars
             {
-                Title = "Test Car Direct",
-                rental_rate_per_minute = 0.5m,
-                rental_rate_per_km = 0.2m,
+                Title = "Test Car Direct", 
+                Description = "Test car description",
+                rental_rate_per_minute = 0.5m, 
+                rental_rate_per_km = 0.2m,     
                 is_available = true
             };
-
             _context.Cars.Add(car);
             await _context.SaveChangesAsync();
 
@@ -136,7 +134,8 @@ namespace KooliProjekt.IntegrationTests
             // Создаем машину для редактирования
             var car = new Cars
             {
-                Title = "Original Car",
+                Title = "Test Car",
+                Description = "Test car description", // Add this line
                 rental_rate_per_minute = 0.3m,
                 rental_rate_per_km = 0.1m,
                 is_available = true
@@ -179,7 +178,8 @@ namespace KooliProjekt.IntegrationTests
             // Создаем машину для удаления
             var car = new Cars
             {
-                Title = "Car to Delete",
+                Title = "Test Car",
+                Description = "Test car description", // Add this line
                 rental_rate_per_minute = 0.3m,
                 rental_rate_per_km = 0.1m,
                 is_available = true

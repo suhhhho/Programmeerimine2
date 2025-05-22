@@ -23,7 +23,14 @@ namespace KooliProjekt.UnitTests.ServiceTests
         public async Task Delete_should_remove_existing_list()
         {
             // Arrange
-            var list = new Cars { Title = "Test" };
+            var list = new Cars
+            {
+                Title = "Test",
+                Description = "Test car description", // Added Description
+                rental_rate_per_minute = 0.5m,
+                rental_rate_per_km = 0.5m,
+                is_available = true
+            };
             DbContext.Cars.Add(list);
             DbContext.SaveChanges();
 

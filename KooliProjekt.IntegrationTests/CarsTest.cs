@@ -60,7 +60,14 @@ namespace KooliProjekt.IntegrationTests
         public async Task Details_should_return_ok_when_list_was_found()
         {
             // Arrange
-            var list = new Cars { Title = "List 1" };
+            var list = new Cars
+            {
+                Title = "List 1",
+                Description = "Car description for testing",  // Added Description property
+                rental_rate_per_minute = 0.5m,
+                rental_rate_per_km = 0.5m,
+                is_available = true
+            };
             _context.Cars.Add(list);
             _context.SaveChanges();
 

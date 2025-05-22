@@ -81,6 +81,7 @@ namespace KooliProjekt.IntegrationTests
             var car = new Cars
             {
                 Title = "Rent Test Car",
+                Description = "A car for testing rent creation", // Add Description property
                 rental_rate_per_minute = 0.3m,
                 rental_rate_per_km = 0.1m,
                 is_available = true
@@ -124,6 +125,7 @@ namespace KooliProjekt.IntegrationTests
             var car = new Cars
             {
                 Title = "Edit Test Car",
+                Description = "A car for testing rent editing", // Add Description property
                 rental_rate_per_minute = 0.3m,
                 rental_rate_per_km = 0.1m,
                 is_available = true
@@ -179,6 +181,7 @@ namespace KooliProjekt.IntegrationTests
             var car = new Cars
             {
                 Title = "Cancel Test Car",
+                Description = "A car for testing rent cancellation", // Add Description property
                 rental_rate_per_minute = 0.3m,
                 rental_rate_per_km = 0.1m,
                 is_available = true
@@ -231,6 +234,7 @@ namespace KooliProjekt.IntegrationTests
             var car = new Cars
             {
                 Title = "Delete Test Car",
+                Description = "A car for testing rent deletion", // Add Description property
                 rental_rate_per_minute = 0.3m,
                 rental_rate_per_km = 0.1m,
                 is_available = true
