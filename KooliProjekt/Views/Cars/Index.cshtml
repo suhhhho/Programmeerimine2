@@ -1,25 +1,51 @@
 ﻿@model KooliProjekt.Models.CarsIndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Cars";
 }
 
-<h1>Index</h1>
+<h1>Cars</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form asp-action="Index" method="get">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Search.Keyword" class="control-label">Search</label>
+                <input asp-for="Search.Keyword" class="form-control" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Search.Done" class="control-label">Available</label>
+                <select asp-for="Search.Done" class="form-control">
+                    <option value="">All</option>
+                    <option value="true">Available</option>
+                    <option value="false">Not Available</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Search" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Reset</a>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                Mark
+                Title
             </th>
             <th>
-                Price per minute
+                Rental Rate (per minute)
             </th>
             <th>
-                Price per km
+                Rental Rate (per km)
             </th>
             <th>
                 Available
@@ -52,4 +78,5 @@
         }
     </tbody>
 </table>
+
 @(await Component.InvokeAsync<PagerViewComponent>(Model.Data))

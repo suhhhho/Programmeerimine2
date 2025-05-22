@@ -9,5 +9,6 @@ using System.Diagnostics.CodeAnalysis;
      public decimal rental_rate_per_km { get; set; }
      public Boolean is_available { get; set; }
         public string Title { get; set; }
+     public string Description { get; set; }
     }
 

@@ -15,7 +15,23 @@ namespace KooliProjekt.Services
 
         public async Task<PagedResult<Cars>> List(int page, int pageSize, CarsSearch search)
         {
-            return await _context.Cars.GetPagedAsync(page, pageSize);
+            IQueryable<Cars> query = _context.Cars;
+
+            // Apply search filters
+            if (search != null)
+            {
+                if (!string.IsNullOrEmpty(search.Keyword))
+                {
+                    query = query.Where(car => car.Title.Contains(search.Keyword));
+                }
+
+                if (search.Done.HasValue)
+                {
+                    query = query.Where(car => car.is_available == search.Done.Value);
+                }
+            }
+
+            return await query.GetPagedAsync(page, pageSize);
         }
 
         public async Task<Cars> Get(int id)
